@@ -1,39 +1,40 @@
-//load images and animate images
-//get image data from openframeworks
-
-//------------------------------------------------------
-// basic drawing code
-var myPath;
 var myCircle;
-var circleCount =0;
+var circleCount = 0;
 var myCircles = [];
-var isPathComplete = true;
+
 var frame;
-var myImage = 'img2.jpg';
-// var myImgNames = ['img1.jpg', 'img2.jpg'];
 
+var myImgNames = ['01.jpeg', '02.jpeg', '03.jpeg', '04.jpeg', '05.jpeg'];
+var rasterImages = [];
 
-// function loadImages(){
-// 	console.log("inside loadImages");
-// // for (i = 0; i<myImgNames; i++){
-// // 	console.log("inside image loop");
- 	var raster = new Raster('img1.jpg');
- 	raster.visible = false;
-	raster.position = view.center;
-// 	console.log("images loaded");
-// // }
-// }
+var counter = 0;
+var imgToShow = -1;
+var imgToRemove = -2;
 
-function Circle(circleNum, circlePos){
-	this.num = circleNum;
-	this.pos = circlePos;
-}
+var isPathComplete = false;
 
 var textItem = new PointText({
 	content: 'Draw a path by clicking the mouse.',
 	point: new Point(20, 30),
 	fillColor: 'black',
 });
+
+function loadImages(){
+	console.log("inside loadImages");
+	for (var i = 0; i<myImgNames.length; i++){
+		$('#body').append("<div class='visuallyHidden'" + 
+			"<img id=" + myImgNames[i] + "src=" + myImgNames[i] + ">" +
+			"</div>");
+	}
+
+	for(var i = 0; i<myImgNames.length; i++){
+		var raster = new Raster(myImgNames[i]);
+		raster.visible = false;
+		raster.position = view.center;
+		rasterImages.push(raster);
+	}
+	console.log("rasterImages array = " + rasterImages.length);
+}
 
 function drawFrame(){
 	var width = view.size.width;
@@ -44,11 +45,49 @@ function drawFrame(){
 		size: [520, 300],
 		strokeColor: 'black',
 		fillColor: 'black'
-	})
+	});
+}
+
+function Circle(circleNum, circlePos){
+	this.num = circleNum;
+	this.pos = circlePos;
+}
+
+function showImages(img, rem){
+	console.log("in show images");
+	rasterImages[img].visible = true;
+	console.log(rasterImages[img].visible);
+	
+	if (imgToRemove > -1){
+	rasterImages[rem].visible = false;
+	console.log(rasterImages[rem].visible);
+	}
+}
+
+function onFrame(event){
+	counter ++;
+	if (counter%100 === 0){
+			console.log("counter is at 100");
+			imgToShow ++;
+			imgToRemove ++;
+			console.log("image to show = " + imgToShow);
+			console.log("image to imgToRemove = " + imgToRemove);
+			showImages(imgToShow, imgToRemove);
+		}
+
+	if (imgToShow===rasterImages.length-1) {
+		imgToShow = -1;
+		console.log("if greater imgtoshow:" + imgToShow);
+
+	}
+	if (imgToRemove===rasterImages.length-1) {
+		imgToRemove = -1;
+		console.log("if greater imgToRemove:" + imgToRemove);
+	}
 }
 
 function onMouseDown(event) {
-	if (isPathComplete == true && frame.bounds.contains(event.point)){
+	if (isPathComplete == false && frame.bounds.contains(event.point)){
 		console.log("intersects: " + frame.bounds.contains(event.point))
 		
 		//variable for each x,y of mouseclick and for count of total mouseclicks 
@@ -74,15 +113,22 @@ function onMouseDown(event) {
 		// 	children: [myCircle],
 		// });
 		}
-		else {
-		//code for sending object data to API here
-		
-		console.log("first in else statement: " + isPathComplete);
-		isPathComplete = true;
-		console.log("second in else statement: " + isPathComplete);
 	}
-}
 
+// take each circle, compare it to all images
+function getDistance( point1, point2 )
+{
+  var xs = 0;
+  var ys = 0;
+ 
+  xs = point2.x - point1.x;
+  xs = xs * xs;
+ 
+  ys = point2.y - point1.y;
+  ys = ys * ys;
+ 
+  return Math.sqrt( xs + ys );
+}
 
 function onMouseDrag(event) {
 
@@ -95,17 +141,16 @@ function onMouseUp(event) {
 $(document).ready(function(){
 	console.log("Loaded!");
 	drawFrame();
-	// loadImages();
+	loadImages();
 	$('#update').click(function(){
-		isPathComplete = false;
-		console.log("button press: " + isPathComplete);
 		myCircles.length = 0;
 		circleCount = 0;
-		console.log("myCircles should be clear: " + myCircles.length);
+		console.log("myCircles (should be zero): " + myCircles.length);
 		project.activeLayer.removeChildren([2]);
-		raster.visible = true;
-		// $("#body").append("<img src=" + myImage + "/>");
+		// showImages(imgToShow, imgToRemove);
 		isPathComplete = true;
+		 
+		
 	})
 
 
