@@ -2,6 +2,9 @@ var myCircle;
 var circleCount = 0;
 var myCircles = [];
 
+var circleGroup = new Group();
+var imageGroup;
+
 var frame;
 
 var myImgNames = ['01.jpeg', '02.jpeg', '03.jpeg', '04.jpeg', '05.jpeg'];
@@ -93,25 +96,22 @@ function onMouseDown(event) {
 		//variable for each x,y of mouseclick and for count of total mouseclicks 
 		var currPoint = event.point;
 		circleCount = circleCount + 1;
-		console.log(circleCount);
-		console.log(currPoint);
+		console.log("circleCount = " + circleCount);
+		console.log("currPoint = " + currPoint);
 
 		//create circle at every click
-		myCircle = new Path.Circle({
-		center: currPoint,
-		radius: 10
-		});
+		myCircle = new Path.Circle(currPoint, 10);
 		myCircle.fillColor = 'red';
-		
-		//store x,y and count into temp object, push to array of Circle prototype
+
+		//add each circle to the circleGroup
+		circleGroup.addChild(myCircle);
+		console.log("circleGroup = " + circleGroup);	
+					
+		// store x,y and count into temp object, push to array of Circle prototype
 		var tempObject = new Circle(circleCount, currPoint);
 		myCircles.push(tempObject);
 		console.log(myCircles);
 
-		//create new layer of myCircle so they can be removed later
-		// var circleLayer = new Layer ({
-		// 	children: [myCircle],
-		// });
 		}
 	}
 
@@ -130,6 +130,21 @@ function getDistance( point1, point2 )
   return Math.sqrt( xs + ys );
 }
 
+function getImagesForPoints(points){
+	//for each point loop through images
+
+		//check distance for each point to each image
+			//var dist = getDistance(points[i], images[j])
+
+			//check to see if its  minimmum 
+
+			// if(dist<minDist){
+			// 	dist = minDist;
+			// }
+
+
+}
+
 function onMouseDrag(event) {
 
 }
@@ -146,7 +161,7 @@ $(document).ready(function(){
 		myCircles.length = 0;
 		circleCount = 0;
 		console.log("myCircles (should be zero): " + myCircles.length);
-		project.activeLayer.removeChildren([2]);
+		// project.activeLayer.removeChildren([2]);
 		// showImages(imgToShow, imgToRemove);
 		isPathComplete = true;
 		 
